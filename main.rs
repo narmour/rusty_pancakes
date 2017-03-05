@@ -3,6 +3,7 @@ use std::io::prelude::*;
 use std::collections::BinaryHeap;
 use std::cmp::Ordering;
 
+#[derive(Clone)]
 struct State{
 	pan_cakes: Vec<i32>,
 	prev_state: Option<Box<State>>,
@@ -91,7 +92,10 @@ fn a_star(list: &Vec<i32>) {
     // copy vector passed in
     let mut start_list = list.to_vec();
     // push start into pqueue
-    let start = State{pan_cakes: start_list,prev_state:None,cost: 0,heuristic: num_breakpoints(&list)};
+    let start = State{pan_cakes: start_list,
+                      prev_state: None,
+                      cost: 0,
+                      heuristic: num_breakpoints(&list)};
     p_queue.push(start);
 
     
@@ -109,8 +113,10 @@ fn a_star(list: &Vec<i32>) {
             while j <=current.pan_cakes.len(){
                 let mut l = flip(&current.pan_cakes,i,j);
                 let mut c = current.cost;
-                let mut child = State{pan_cakes: l,prev_state: Some(Box::new(current)),cost:c+1,
-                heuristic: (c+1) + num_breakpoints(&l)/2};
+                let mut child = State{pan_cakes: l.clone(),
+                                      prev_state: Some(Box::new(current.clone())),
+                                      cost:c+1,
+                                      heuristic: (c+1) + num_breakpoints(&l)/2};
                 p_queue.push(child);
                 j+=1;
             }
