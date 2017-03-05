@@ -115,6 +115,7 @@ fn a_star(list: &Vec<i32>) {
                 j+=1;
             }
             i+=1;
+            j = i+1;
 
         }
 
