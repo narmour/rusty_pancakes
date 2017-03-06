@@ -120,7 +120,7 @@ fn print_solution(solution: State){
         
 }*/
 
-    let mut steps = Vec::new();
+    /*let mut steps = Vec::new();
     steps.push(solution.clone());
     let mut x = solution.prev_state;
     loop {
@@ -131,8 +131,16 @@ fn print_solution(solution: State){
         else {
             break;
         }
-    }
+    }*/
 
+    let mut steps = Vec::new();
+    steps.push(solution.clone());
+    let mut x = solution.prev_state;
+    while let Some(y) = x {
+        steps.push(*y.clone());
+        x = y.prev_state;
+    }
+    
 
 
     // get all the parent pointers
