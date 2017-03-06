@@ -77,62 +77,13 @@ fn flip(list:&Vec<i32>,i:usize,j:usize)->Vec<i32>{
 		x+=1;
 	}
 	
-//	for p in &ret{
-//		print!("{} ",p);
-//	}
-//	println!(" ");
-
-
 	return ret;
 		
 
 }
 
 fn print_solution(solution: State){
-    /*let steps : Vec<Box<State>> = Vec::new();
-
-    // the solved Option<state>
-    let x = solution.unwrap();
-    let y = x.prev_state.unwrap();
-    //println!("this works: {}",y.heuristic);
-
-
-
-    // this is a fiery hot mess of shit
-    loop{
-        let current = x.prev_state;
-        match current{
-            Some(x) => steps.push(x),
-            None => {
-                println!("no more");
-                break;
-            }
-        }
-        x = x.prev_state.unwrap();
-    }*/
-
-    /*let steps = Vec::new();
-    let mut it = Some(Box::new(solution.clone()));
-    while let Some(x) = it {
-        println!("{:?}", x);
-        steps.push(x);
-        it = (*x).prev_state;
-        
-}*/
-
-    /*let mut steps = Vec::new();
-    steps.push(solution.clone());
-    let mut x = solution.prev_state;
-    loop {
-        if let Some(y) = x {
-            steps.push(*y.clone());
-            x = y.prev_state;
-        }
-        else {
-            break;
-        }
-    }*/
-
+    // get all the parent pointers
     let mut steps = Vec::new();
     steps.push(solution.clone());
     let mut x = solution.prev_state;
@@ -140,10 +91,33 @@ fn print_solution(solution: State){
         steps.push(*y.clone());
         x = y.prev_state;
     }
+
+    let mut i = steps.len() -1;
+    loop{
+        if i != steps.len()-1{
+            for c in &steps[i].pan_cakes{
+                print!("{}",c)
+            }
+            println!("");
+            print!("FLIP : ");
+            let mut begin = steps[i].i;
+            let end = steps[i].j;
+
+            while begin <=end{
+                print!("{}",steps[i].pan_cakes[begin]);
+                begin+=1;
+            }
+        }
+        println!("");
+        if i ==0{
+            break;
+        }
+            i-=1;
+
+    }
     
 
 
-    // get all the parent pointers
 
 }
 
@@ -151,7 +125,7 @@ fn a_star(list: &Vec<i32>) {
     // create priority queue
 	let mut p_queue: BinaryHeap<State> = BinaryHeap::new();
     // copy vector passed in
-    let mut start_list = list.to_vec();
+    let start_list = list.to_vec();
     // push start into pqueue
     let start = State{pan_cakes: start_list,
                       prev_state: None,
@@ -163,18 +137,7 @@ fn a_star(list: &Vec<i32>) {
 
     
     while p_queue.len() > 0{
-        let mut current = p_queue.pop().unwrap();
-
-
-
-        // DEBUG
-        for p in &current.pan_cakes{
-            print!("{} ",p);
-        }
-        println!("heuristic: {}",current.heuristic as i32);
-
-
-
+        let current = p_queue.pop().unwrap();
         //found a solution thats in ascending order
         if (num_breakpoints(&current.pan_cakes) as f32 *0.5).ceil()==0.0 &&
                 &current.pan_cakes[0] <= &current.pan_cakes[1]{
@@ -186,10 +149,10 @@ fn a_star(list: &Vec<i32>) {
         let mut j =1;
         while i < current.pan_cakes.len() -1{
             while j <current.pan_cakes.len(){
-                let mut l = flip(&current.pan_cakes,i,j);
-                let mut c = current.cost;
+                let l = flip(&current.pan_cakes,i,j);
+                let c = current.cost;
                 let h :f32 = (num_breakpoints(&l) as f32 *0.5).ceil();
-                let mut child = State{pan_cakes: l.clone(),
+                let child = State{pan_cakes: l.clone(),
                                       prev_state: Some(Box::new(current.clone())),
                                       i: i,
                                       j: j,
@@ -216,6 +179,7 @@ fn main(){
 	let mut input_string = String::new();
 	let mut f = File::open("input.txt").expect("cant open");
 	f.read_to_string(&mut input_string);
+    print!("START: ");
 	for c in input_string.trim().chars(){
 		match c.to_digit(10){
 			Some(c) => {
@@ -227,7 +191,6 @@ fn main(){
 			 
 	}
 	println!(" ");
-	num_breakpoints(&pan_cakes);
 	a_star(&pan_cakes);
 	
 
