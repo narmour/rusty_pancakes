@@ -7,6 +7,9 @@ use std::cmp::Ordering;
 struct State{
 	pan_cakes: Vec<i32>,
 	prev_state: Option<Box<State>>,
+    // previous flip 
+    i: usize,
+    j: usize,
 	// f(n)
 	cost: i32,
 	// f(n) + g(n)
@@ -17,7 +20,7 @@ struct State{
 
 impl Ord for State{
 	fn cmp(&self,other: &State) -> Ordering{
-		self.heuristic.cmp(&other.heuristic)
+		other.heuristic.cmp(&self.heuristic)
 	}
 }
 
@@ -46,7 +49,6 @@ fn num_breakpoints(list: &Vec<i32>) -> i32{
 	i+=1;
 
 	}
-	println!("num breakpoints : {}",bp);
 
 	return bp;
 }
@@ -75,14 +77,44 @@ fn flip(list:&Vec<i32>,i:usize,j:usize)->Vec<i32>{
 		x+=1;
 	}
 	
-	for p in &ret{
-		print!("{} ",p);
-	}
-	println!(" ");
+//	for p in &ret{
+//		print!("{} ",p);
+//	}
+//	println!(" ");
 
 
 	return ret;
 		
+
+}
+
+fn print_solution(solution:Option<State>){
+    let steps : Vec<State> = Vec::new();
+
+    // the solved Option<state>
+    let x = solution.unwrap();
+    let y = x.prev_state.unwrap();
+    //println!("this works: {}",y.heuristic);
+
+
+
+    // this is a fiery hot mess of shit
+    loop{
+        let current = x.prev_state;
+        match current{
+            Some(x) => steps.push(x),
+            None => {
+                println!("no more");
+                break;
+            }
+        }
+        x = x.prev_state;
+    }
+
+
+
+
+    // get all the parent pointers
 
 }
 
@@ -94,29 +126,46 @@ fn a_star(list: &Vec<i32>) {
     // push start into pqueue
     let start = State{pan_cakes: start_list,
                       prev_state: None,
+                      i: 0,
+                      j: 0,
                       cost: 0,
-                      heuristic: num_breakpoints(&list)};
+                      heuristic: (num_breakpoints(&list) as f32 *0.5).ceil() as i32};
     p_queue.push(start);
 
     
     while p_queue.len() > 0{
         let mut current = p_queue.pop().unwrap();
 
-        if num_breakpoints(&current.pan_cakes) == 0{
+
+
+        // DEBUG
+        for p in &current.pan_cakes{
+            print!("{} ",p);
+        }
+        println!("heuristic: {}",current.heuristic as i32);
+
+
+
+        //found a solution thats in ascending order
+        if (num_breakpoints(&current.pan_cakes) as f32 *0.5).ceil()==0.0 &&
+                &current.pan_cakes[0] <= &current.pan_cakes[1]{
+            println!("FOUND SOLUTION");
+            print_solution(Some(current));
             break;
         }
-
-        // push all children into open
         let mut i =0;
         let mut j =1;
         while i < current.pan_cakes.len() -1{
-            while j <=current.pan_cakes.len(){
+            while j <current.pan_cakes.len(){
                 let mut l = flip(&current.pan_cakes,i,j);
                 let mut c = current.cost;
+                let h :f32 = (num_breakpoints(&l) as f32 *0.5).ceil();
                 let mut child = State{pan_cakes: l.clone(),
                                       prev_state: Some(Box::new(current.clone())),
+                                      i: i,
+                                      j: j,
                                       cost:c+1,
-                                      heuristic: (c+1) + num_breakpoints(&l)/2};
+                                      heuristic: (c+1) + h as i32};
                 p_queue.push(child);
                 j+=1;
             }
