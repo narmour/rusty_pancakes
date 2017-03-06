@@ -3,7 +3,7 @@ use std::io::prelude::*;
 use std::collections::BinaryHeap;
 use std::cmp::Ordering;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 struct State{
 	pan_cakes: Vec<i32>,
 	prev_state: Option<Box<State>>,
@@ -88,8 +88,8 @@ fn flip(list:&Vec<i32>,i:usize,j:usize)->Vec<i32>{
 
 }
 
-fn print_solution(solution:Option<State>){
-    let steps : Vec<State> = Vec::new();
+fn print_solution(solution: State){
+    /*let steps : Vec<Box<State>> = Vec::new();
 
     // the solved Option<state>
     let x = solution.unwrap();
@@ -108,9 +108,30 @@ fn print_solution(solution:Option<State>){
                 break;
             }
         }
-        x = x.prev_state;
-    }
+        x = x.prev_state.unwrap();
+    }*/
 
+    /*let steps = Vec::new();
+    let mut it = Some(Box::new(solution.clone()));
+    while let Some(x) = it {
+        println!("{:?}", x);
+        steps.push(x);
+        it = (*x).prev_state;
+        
+}*/
+
+    let mut steps = Vec::new();
+    steps.push(solution.clone());
+    let mut x = solution.prev_state;
+    loop {
+        if let Some(y) = x {
+            steps.push(*y.clone());
+            x = y.prev_state;
+        }
+        else {
+            break;
+        }
+    }
 
 
 
@@ -150,7 +171,7 @@ fn a_star(list: &Vec<i32>) {
         if (num_breakpoints(&current.pan_cakes) as f32 *0.5).ceil()==0.0 &&
                 &current.pan_cakes[0] <= &current.pan_cakes[1]{
             println!("FOUND SOLUTION");
-            print_solution(Some(current));
+            print_solution(current);
             break;
         }
         let mut i =0;
