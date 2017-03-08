@@ -87,16 +87,18 @@ fn print_solution(solution: State){
     let mut steps = Vec::new();
     steps.push(solution.clone());
     let mut x = solution.prev_state;
+    let mut num_steps =0;
     while let Some(y) = x {
         steps.push(*y.clone());
         x = y.prev_state;
+        num_steps+=1;
     }
 
     let mut i = steps.len() -1;
     loop{
         if i != steps.len()-1{
             for c in &steps[i].pan_cakes{
-                print!("{}",c)
+                print!("{} ",c)
             }
             println!("");
             print!("FLIP : ");
@@ -104,7 +106,7 @@ fn print_solution(solution: State){
             let end = steps[i].j;
 
             while begin <=end{
-                print!("{}",steps[i].pan_cakes[begin]);
+                print!("{} ",steps[i].pan_cakes[begin]);
                 begin+=1;
             }
         }
@@ -115,6 +117,8 @@ fn print_solution(solution: State){
             i-=1;
 
     }
+
+    println!("NUM TRAVERSALS: {}",num_steps);
     
 
 
@@ -180,6 +184,7 @@ fn main(){
 	let mut f = File::open("input.txt").expect("cant open");
 	f.read_to_string(&mut input_string);
     print!("START: ");
+    /*
 	for c in input_string.trim().chars(){
 		match c.to_digit(10){
 			Some(c) => {
@@ -190,11 +195,16 @@ fn main(){
 		}
 			 
 	}
+    */
+    for n in input_string.trim().split(" "){
+        print!("{} ",n.parse::<i32>().unwrap());
+        pan_cakes.push(n.parse::<i32>().unwrap());
+    }
+
+
+
 	println!(" ");
 	a_star(&pan_cakes);
-	
-
-	
 
 
 }
